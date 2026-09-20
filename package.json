@@ -1,0 +1,12 @@
+{
+  "name": "pdf-reader-pwa",
+  "version": "1.0.0",
+  "description": "PDF Reader PWA for Android with Material 3 UI",
+  "scripts": {
+    "dev": "npx serve . -l 5173",
+    "build": "echo 'Static PWA - no build needed'"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

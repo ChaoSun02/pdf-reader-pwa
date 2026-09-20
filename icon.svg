@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#6750A4"/>
+
+  <!-- Document shape -->
+  <path d="M160 120 L352 120 L352 392 L160 392 Z" fill="#FFFFFF" opacity="0.15"/>
+
+  <!-- Document with folded corner -->
+  <path d="M180 140 L332 140 L332 372 L180 372 Z" fill="#FFFFFF"/>
+
+  <!-- Folded corner -->
+  <path d="M280 140 L332 140 L332 192 Z" fill="#EADDFF"/>
+
+  <!-- PDF text -->
+  <text x="256" y="220" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#6750A4" text-anchor="middle" dominant-baseline="middle">PDF</text>
+
+  <!-- Bookmark ribbon -->
+  <path d="M332 160 L372 180 L332 200 Z" fill="#6750A4" opacity="0.8"/>
+
+  <!-- Progress indicator line -->
+  <rect x="180" y="300" width="152" height="8" rx="4" fill="#EADDFF"/>
+  <rect x="180" y="300" width="91" height="8" rx="4" fill="#6750A4"/>
+
+  <!-- Page indicator -->
+  <text x="256" y="360" font-family="Arial, sans-serif" font-size="24" fill="#6750A4" text-anchor="middle" dominant-baseline="middle" opacity="0.7">Page 1 of 100</text>
+</svg>

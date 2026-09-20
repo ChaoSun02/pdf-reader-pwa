@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#6750A4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="PDF Reader">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <title>PDF Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu,close,search,delete,settings,view_module,view_list,grid_view,table_view,refresh,file_open,folder_open,chevron_left,chevron_right,fullscreen,fullscreen_exit,zoom_in,zoom_out,rotate_right,bookmark,bookmark_remove,more_vert,brightness_4,brightness_7,info,help,arrow_back" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght,wdth,GRAD@8..144,100..1000,25..151,-200..200&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Library View -->
+    <section id="library-view" class="view active" role="main">
+      <header class="top-app-bar">
+        <div class="top-app-bar-content">
+          <h1 class="top-app-bar-title">PDF Reader</h1>
+          <div class="top-app-bar-actions">
+            <button class="icon-button" id="view-toggle-btn" aria-label="Αλλαγή προβολής" title="Αλλαγή προβολής">
+              <span class="material-symbols-rounded">view_module</span>
+            </button>
+            <button class="icon-button" id="open-folder-btn" aria-label="Ανοίξτε φάκελο" title="Ανοίξτε φάκελο">
+              <span class="material-symbols-rounded">folder_open</span>
+            </button>
+            <button class="icon-button" id="settings-btn" aria-label="Ρυθμίσεις" title="Ρυθμίσεις">
+              <span class="material-symbols-rounded">settings</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="search-container">
+        <div class="search-field">
+          <span class="material-symbols-rounded search-icon">search</span>
+          <input type="search" id="search-input" placeholder="Αναζήτηση βιβλίων..." aria-label="Αναζήτηση">
+          <button class="icon-button clear-search" id="clear-search" aria-label="Καθαρισμός" hidden>
+            <span class="material-symbols-rounded">close</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="library-toolbar">
+        <div class="toolbar-info" id="library-count">0 βιβλία</div>
+        <div class="toolbar-actions">
+          <button class="icon-button" id="sort-btn" aria-label="Ταξινόμηση" title="Ταξινόμηση">
+            <span class="material-symbols-rounded">sort</span>
+          </button>
+        </div>
+      </div>
+
+      <main class="library-grid" id="library-grid" role="list" aria-label="Βιβλιοθήκη PDF">
+        <!-- Books injected here -->
+      </main>
+
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="material-symbols-rounded empty-icon">file_open</span>
+        <h2>Δεν βρέθηκαν PDF</h2>
+        <p>Επιλέξτε έναν φάκελο για να ξεκινήσετε</p>
+        <button class="filled-button" id="empty-open-folder">
+          <span class="material-symbols-rounded">folder_open</span>
+          <span>Επιλογή φακέλου</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Reader View -->
+    <section id="reader-view" class="view" role="main" aria-label="PDF Reader">
+      <header class="top-app-bar reader-bar" id="reader-bar">
+        <button class="icon-button" id="back-btn" aria-label="Επιστροφή" title="Επιστροφή">
+          <span class="material-symbols-rounded">chevron_left</span>
+        </button>
+        <div class="top-app-bar-content flex">
+          <h1 class="top-app-bar-title reader-title" id="reader-title">PDF</h1>
+        </div>
+        <div class="top-app-bar-actions">
+          <button class="icon-button" id="bookmark-btn" aria-label="Σειράκια" title="Σειράκια">
+            <span class="material-symbols-rounded">bookmark</span>
+          </button>
+          <button class="icon-button" id="fullscreen-btn" aria-label="Πλήρης οθόνη" title="Πλήρης οθόνη">
+            <span class="material-symbols-rounded">fullscreen</span>
+          </button>
+          <button class="icon-button" id="reader-settings-btn" aria-label="Ρυθμίσεις αναγνώστη" title="Ρυθμίσεις">
+            <span class="material-symbols-rounded">more_vert</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="reader-toolbar" id="reader-toolbar">
+        <div class="toolbar-group">
+          <button class="icon-button" id="prev-page" aria-label="Προηγούμενη σελίδα" title="Προηγούμενη">
+            <span class="material-symbols-rounded">chevron_left</span>
+          </button>
+          <div class="page-input-container">
+            <input type="number" id="page-input" min="1" value="1" aria-label="Αριθμός σελίδας">
+            <span id="page-total">/ 0</span>
+          </div>
+          <button class="icon-button" id="next-page" aria-label="Επόμενη σελίδα" title="Επόμενη">
+            <span class="material-symbols-rounded">chevron_right</span>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+          <button class="icon-button" id="zoom-out" aria-label="Μείωση μεγέθους" title="Zoom out">
+            <span class="material-symbols-rounded">zoom_out</span>
+          </button>
+          <span class="zoom-level" id="zoom-level">100%</span>
+          <button class="icon-button" id="zoom-in" aria-label="Αύξηση μεγέθους" title="Zoom in">
+            <span class="material-symbols-rounded">zoom_in</span>
+          </button>
+          <button class="icon-button" id="rotate-btn" aria-label="Περιστροφή" title="Περιστροφή">
+            <span class="material-symbols-rounded">rotate_right</span>
+          </button>
+        </div>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-group">
+          <button class="icon-button" id="theme-toggle" aria-label="Θέμα" title="Θέμα">
+            <span class="material-symbols-rounded">brightness_4</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="reader-container" id="reader-container">
+        <div class="pdf-viewport" id="pdf-viewport">
+          <canvas id="pdf-canvas"></canvas>
+        </div>
+        <div class="page-shadow"></div>
+      </div>
+
+      <footer class="reader-bottom-bar" id="reader-bottom-bar">
+        <div class="bottom-bar-content">
+          <div class="reading-progress">
+            <div class="progress-bar" id="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span class="progress-text" id="progress-text">0%</span>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+    <!-- Settings Drawer -->
+    <aside class="drawer" id="settings-drawer" role="dialog" aria-label="Ρυθμίσεις" aria-modal="true" hidden>
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+      <div class="drawer-content">
+        <header class="drawer-header">
+          <h2>Ρυθμίσεις</h2>
+          <button class="icon-button" id="close-drawer" aria-label="Κλείσιμο">
+            <span class="material-symbols-rounded">close</span>
+          </button>
+        </header>
+        <div class="drawer-body">
+          <section class="settings-section">
+            <h3>Εμφάνιση</h3>
+            <div class="setting-item">
+              <label class="switch" for="dark-mode">
+                <input type="checkbox" id="dark-mode" role="switch">
+                <span class="switch-track"></span>
+                <span class="switch-thumb"></span>
+              </label>
+              <span class="setting-label">Σκοτεινό θέμα</span>
+            </div>
+            <div class="setting-item">
+              <label class="switch" id="keep-screen-on-label">
+                <input type="checkbox" id="keep-screen-on" role="switch">
+                <span class="switch-track"></span>
+                <span class="switch-thumb"></span>
+              </label>
+              <span class="setting-label">Διατήρηση οθόνης ενεργοποιημένης</span>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Ανάγνωση</h3>
+            <div class="setting-item">
+              <label for="default-zoom">Προεπιλεγμένο zoom</label>
+              <select id="default-zoom">
+                <option value="auto">Αυτόματο (πλήρης πλάτος)</option>
+                <option value="page-width">Πλάτος σελίδας</option>
+                <option value="page-fit">Πλήρης σελίδα</option>
+                <option value="1.0">100%</option>
+                <option value="1.25">125%</option>
+                <option value="1.5">150%</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label class="switch" for="continuous-scroll">
+                <input type="checkbox" id="continuous-scroll" role="switch" checked>
+                <span class="switch-track"></span>
+                <span class="switch-thumb"></span>
+              </label>
+              <span class="setting-label">Συνεχής κύλιση (scroll mode)</span>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Δεδομένα</h3>
+            <div class="setting-item">
+              <button class="outlined-button" id="clear-progress-btn">
+                <span class="material-symbols-rounded">delete</span>
+                <span>Καθαρισμός προόδου ανάγνωσης</span>
+              </button>
+            </div>
+            <div class="setting-item">
+              <button class="outlined-button" id="export-data-btn">
+                <span class="material-symbols-rounded">download</span>
+                <span>Εξαγωγή δεδομένων (JSON)</span>
+              </button>
+            </div>
+            <div class="setting-item">
+              <label class="file-import-label">
+                <input type="file" id="import-data" accept=".json" hidden>
+                <button class="outlined-button">
+                  <span class="material-symbols-rounded">upload</span>
+                  <span>Εισαγωγή δεδομένων</span>
+                </button>
+              </label>
+            </div>
+          </section>
+          <section class="settings-section">
+            <h3>Σχετικά</h3>
+            <div class="setting-item">
+              <span class="setting-label">PDF Reader PWA v1.0</span>
+            </div>
+            <div class="setting-item">
+              <a href="https://github.com/mozilla/pdf.js" target="_blank" rel="noopener" class="setting-label">Χρησιμοποιεί PDF.js</a>
+            </div>
+            <div class="setting-item">
+              <a href="https://github.com/material-components/material-web" target="_blank" rel="noopener" class="setting-label">Material 3 UI</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sort Menu -->
+    <menu class="dropdown-menu" id="sort-menu" role="menu" aria-label="Ταξινόμηση" hidden>
+      <menuitem role="menuitem" data-sort="name-asc">Όνομα (Α-Ω)</menuitem>
+      <menuitem role="menuitem" data-sort="name-desc">Όνομα (Ω-Α)</menuitem>
+      <menuitem role="menuitem" data-sort="date-desc">Πρόσφατα πρώτα</menuitem>
+      <menuitem role="menuitem" data-sort="date-asc">Παλαιότερα πρώτα</menuitem>
+      <menuitem role="menuitem" data-sort="progress-desc">Πιο προχωρημένα</menuitem>
+      <menuitem role="menuitem" data-sort="size-desc">Μεγαλύτερα πρώτα</menuitem>
+    </menu>
+
+    <!-- Reader Settings Menu -->
+    <menu class="dropdown-menu" id="reader-settings-menu" role="menu" aria-label="Ρυθμίσεις αναγνώστη" hidden>
+      <menuitem role="menuitem" id="menu-bookmark">Προσθήκη σφραγίδας</menuitem>
+      <menuitem role="menuitem" id="menu-go-to">Μετάβαση σε σελίδα...</menuitem>
+      <menuitem role="menuitem" id="menu-outline">Περιεχόμενα</menuitem>
+      <menuitem role="menuitem" id="menu-properties">Ιδιότητες αρχείου</menuitem>
+    </menu>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(console.error);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "PDF Reader",
+  "short_name": "PDF Reader",
+  "description": "PDF Reader PWA για Android με Material 3 UI, IndexedDB και File System Access API",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFBFE",
+  "theme_color": "#6750A4",
+  "scope": "/",
+  "lang": "el",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Ανοίξτε φάκελο",
+      "short_name": "Φάκελος",
+      "description": "Επιλέξτε φάκελο με PDF αρχεία",
+      "url": "/?action=open-folder",
+      "icons": [{ "src": "icon.svg", "sizes": "96x96" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
