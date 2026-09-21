@@ -379,18 +379,12 @@ async function getPageCount(file) {
 // PDF.js Integration
 // ========================================
 
-async function loadPDFJS() {
-  if (typeof pdfjsLib !== 'undefined') return;
-
-  // Configure PDF.js worker
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${CONFIG.PDF_JS_VERSION}/pdf.worker.min.js`;
-}
+// PDF.js is loaded via script tag in index.html
+// pdfjsLib is available globally as a module
 
 async function openBook(book) {
   state.currentBook = book;
   state.currentPage = book.currentPage || 1;
-
-  await loadPDFJS();
 
   try {
     setLoading(true);
