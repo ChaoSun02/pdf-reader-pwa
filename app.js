@@ -280,11 +280,7 @@ async function loadBooksFromDirectory(dirHandle) {
   state.books = [];
 
   try {
-    for await (const entry of dirHandle.values()) {
-      if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.pdf')) {
-        await processPDFFile(entry);
-      }
-    }
+    await scanDirectoryRecursive(dirHandle);
     await renderLibrary();
     updateLibraryCount();
   } catch (err) {
@@ -292,6 +288,17 @@ async function loadBooksFromDirectory(dirHandle) {
     showToast('Σφάλμα φόρτωσης βιβλίων');
   } finally {
     setLoading(false);
+  }
+}
+
+async function scanDirectoryRecursive(dirHandle) {
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.pdf')) {
+      await processPDFFile(entry);
+    } else if (entry.kind === 'directory') {
+      // Recursively scan subdirectories
+      await scanDirectoryRecursive(entry);
+    }
   }
 }
 
