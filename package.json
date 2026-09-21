@@ -8,5 +8,20 @@
   },
   "devDependencies": {
     "serve": "^14.2.0"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChaoSun02/pdf-reader-pwa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChaoSun02/pdf-reader-pwa/issues"
+  },
+  "homepage": "https://github.com/ChaoSun02/pdf-reader-pwa#readme",
+  "dependencies": {
+    "sharp": "^0.35.4"
   }
 }
