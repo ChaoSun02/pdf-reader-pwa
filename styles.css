@@ -87,6 +87,12 @@
   --md-sys-typescale-label-large-line-height: 20px;
   --md-sys-typescale-label-large-tracking: 0.1px;
 
+  --md-sys-typescale-body-small-font: 'Roboto Flex', sans-serif;
+  --md-sys-typescale-body-small-size: 12px;
+  --md-sys-typescale-body-small-weight: 400;
+  --md-sys-typescale-body-small-line-height: 16px;
+  --md-sys-typescale-body-small-tracking: 0.4px;
+
   /* Spacing */
   --md-sys-spacing-1: 4px;
   --md-sys-spacing-2: 8px;
@@ -1277,4 +1283,82 @@ body {
   .outlined-button {
     height: 52px;
   }
+}
+
+/* ========================================
+   Folder Picker Modal
+   ======================================== */
+
+.folder-picker-modal {
+  position: fixed;
+  inset: 0;
+  background: var(--md-sys-color-scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--md-sys-spacing-4);
+}
+
+.folder-picker-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.folder-picker-content {
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-level4);
+  max-width: 480px;
+  width: 100%;
+  transform: scale(0.9);
+  transition: transform 0.2s ease;
+}
+
+.folder-picker-modal.show .folder-picker-content {
+  transform: scale(1);
+}
+
+.folder-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--md-sys-spacing-4) var(--md-sys-spacing-5);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.folder-picker-header h2 {
+  margin: 0;
+  font-size: var(--md-sys-typescale-title-large-size);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  color: var(--md-sys-color-on-surface);
+}
+
+.folder-picker-body {
+  padding: var(--md-sys-spacing-5);
+}
+
+.folder-picker-body p {
+  margin: 0 0 var(--md-sys-spacing-4);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-medium-size);
+}
+
+.folder-picker-body strong {
+  color: var(--md-sys-color-on-surface);
+}
+
+.folder-picker-actions {
+  display: flex;
+  gap: var(--md-sys-spacing-3);
+  margin-bottom: var(--md-sys-spacing-4);
+}
+
+.folder-picker-hint {
+  font-size: var(--md-sys-typescale-body-small-size) !important;
+  color: var(--md-sys-color-outline) !important;
+  margin-top: var(--md-sys-spacing-4) !important;
 }

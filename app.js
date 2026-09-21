@@ -257,13 +257,15 @@ async function updateKeepScreenOn() {
 // File System Access API
 // ========================================
 
-async function requestDirectoryAccess() {
+async function requestDirectoryAccess(startIn = 'documents') {
   try {
     const handle = await window.showDirectoryPicker({
       mode: 'read',
-      startIn: 'documents'
+      startIn
     });
     state.fileHandle = handle;
+    // Save the handle for persistence
+    await saveDirectoryHandle(handle);
     await loadBooksFromDirectory(handle);
     return true;
   } catch (err) {
@@ -273,6 +275,99 @@ async function requestDirectoryAccess() {
     }
     return false;
   }
+}
+
+async function saveDirectoryHandle(handle) {
+  try {
+    // Store the handle in IndexedDB for persistence
+    await dbPut(CONFIG.STORES.SETTINGS, { 
+      key: 'directory-handle', 
+      value: handle 
+    });
+  } catch (err) {
+    console.warn('Could not save directory handle:', err);
+  }
+}
+
+async function getSavedDirectoryHandle() {
+  try {
+    const saved = await dbGet(CONFIG.STORES.SETTINGS, 'directory-handle');
+    return saved?.value || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function openFolderPickerModal() {
+  const modal = document.createElement('div');
+  modal.className = 'folder-picker-modal';
+  modal.innerHTML = `
+    <div class="folder-picker-content">
+      <header class="folder-picker-header">
+        <h2>Επιλογή φακέλου PDF</h2>
+        <button class="icon-button" id="folder-picker-close" aria-label="Κλείσιμο">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </header>
+      <div class="folder-picker-body">
+        <p id="folder-picker-current">Τρέχων φάκελος: <strong>${state.fileHandle ? state.fileHandle.name : 'Δεν έχει επιλεγεί'}</strong></p>
+        <div class="folder-picker-actions">
+          <button class="outlined-button" id="folder-picker-change">
+            <span class="material-symbols-rounded">folder_open</span>
+            <span>Αλλαγή φακέλου</span>
+          </button>
+          <button class="filled-button" id="folder-picker-select">
+            <span class="material-symbols-rounded">check</span>
+            <span>Επιλογή</span>
+          </button>
+        </div>
+        <p class="folder-picker-hint">Επιλέξτε τον ριζικό φάκελο που περιέχει τα PDF αρχεία σας. Θα σκαναριστούν αναδρομικά όλοι οι υποφάκελοι.</p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Force reflow for animation
+  requestAnimationFrame(() => modal.classList.add('show'));
+  
+  const closeModal = () => {
+    modal.classList.remove('show');
+    setTimeout(() => modal.remove(), 200);
+  };
+  
+  $('#folder-picker-close', modal).addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  
+  $('#folder-picker-change', modal).addEventListener('click', async () => {
+    closeModal();
+    await requestDirectoryAccess();
+    // Refresh the modal if reopened
+  });
+  
+  $('#folder-picker-select', modal).addEventListener('click', () => {
+    closeModal();
+    showToast(`Χρησιμοποιείται φάκελος: ${state.fileHandle?.name || 'κανένας'}`);
+  });
+}
+
+function toggleViewMode() {
+  state.viewMode = state.viewMode === 'grid' ? 'list' : 'grid';
+  renderLibrary();
+  updateViewToggleIcon();
+  showToast(state.viewMode === 'grid' ? 'Προβολή πλέγματος' : 'Προβολή λίστας');
+}
+
+function updateViewToggleIcon() {
+  const btn = $('#view-toggle-btn');
+  const icon = btn.querySelector('.material-symbols-rounded');
+  if (icon) {
+    icon.textContent = state.viewMode === 'grid' ? 'view_module' : 'view_list';
+  }
+  btn.setAttribute('aria-label', state.viewMode === 'grid' ? 'Αλλαγή σε προβολή λίστας' : 'Αλλαγή σε προβολή πλέγματος');
+  btn.setAttribute('title', state.viewMode === 'grid' ? 'Αλλαγή σε προβολή λίστας' : 'Αλλαγή σε προβολή πλέγματος');
 }
 
 async function loadBooksFromDirectory(dirHandle) {
@@ -1041,8 +1136,8 @@ function handleTouchEnd(e) {
 
 function setupEventListeners() {
   // View switching
-  $('#open-folder-btn').addEventListener('click', requestDirectoryAccess);
-  $('#empty-open-folder').addEventListener('click', requestDirectoryAccess);
+  $('#open-folder-btn').addEventListener('click', openFolderPickerModal);
+  $('#empty-open-folder').addEventListener('click', openFolderPickerModal);
   $('#back-btn').addEventListener('click', () => switchView('library-view'));
 
   // Search
@@ -1128,17 +1223,24 @@ async function init() {
     // Setup event listeners
     setupEventListeners();
 
+    // Update view toggle icon
+    updateViewToggleIcon();
+
     // Load books from DB (for previously added books)
     await loadBooksFromDB();
 
-    // Check for existing directory handle (permission persistence)
-    if ('storage' in navigator && 'getDirectory' in navigator.storage) {
+    // Try to restore saved directory handle
+    const savedHandle = await getSavedDirectoryHandle();
+    if (savedHandle) {
       try {
-        const handle = await navigator.storage.getDirectory();
-        // Note: This doesn't restore File System Access API handles
-        // User will need to re-select folder on each session unless using File System Access API
+        // Verify permission still exists
+        const permission = await savedHandle.queryPermission({ mode: 'read' });
+        if (permission === 'granted') {
+          state.fileHandle = savedHandle;
+          await loadBooksFromDirectory(savedHandle);
+        }
       } catch (err) {
-        // Ignore
+        console.warn('Could not restore directory handle:', err);
       }
     }
 
